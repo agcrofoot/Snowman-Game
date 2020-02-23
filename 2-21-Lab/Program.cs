@@ -9,7 +9,7 @@ namespace _2_21_Lab
             int gamesWon = 0;
             int gamesLost = 0;
 
-            String userInput = GetMenuChoice();
+            string userInput = GetMenuChoice();
             while (userInput != "3")
             {
                 Route(userInput, ref gamesWon, ref gamesLost);
@@ -19,10 +19,10 @@ namespace _2_21_Lab
             Goodbye(gamesWon, gamesLost);
         }
 
-        public static String GetMenuChoice()
+        public static string GetMenuChoice()
         {
             DisplayMenu();
-            String userInput = Console.ReadLine();
+            string userInput = Console.ReadLine();
 
             while (!ValidMenuChoice(userInput))
             {
@@ -45,28 +45,41 @@ namespace _2_21_Lab
             Console.WriteLine("3:   Exit Game");
         }
 
-        public static Boolean ValidMenuChoice(String userInput)
+        public static Boolean ValidMenuChoice(string userInput)
         {
-            /*Step 1 update ValidMenuChoice to return true if the user 
-            entered 1, 2 or 3 and return false if they entered anything else.
-            */
+            if(userInput == "1" || userInput == "2" || userInput == "3")
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
-        public static void Route(String userInput, ref int gamesWon, ref int gamesLost)
+        public static void Route(string userInput, ref int gamesWon, ref int gamesLost)
         {
-            /*Step 2: Update to call Snowman if the user entered 1 and 
-             * ScoreBoard if they entered 2
-             */
+            if(userInput == "1")
+            {
+                SnowMan(ref gamesWon, ref gamesLost);
+            }
+            else
+            {
+                if (userInput == "2")
+                {
+                    ScoreBoard(gamesWon, gamesLost);
+                }
+            }
 
         }
 
         public static void SnowMan(ref int gamesWon, ref int gamesLost)
         {
             Console.Clear();
-            String word = GetRandomWord();
+            string word = GetRandomWord();
             char[] displayWord = SetDisplayWord(word);
             int missed = 0;
-            String guessed = "No Letters Guessed Yet";
+            string guessed = "No Letters Guessed Yet";
 
             while (KeepGoing(displayWord, missed))
             {
@@ -91,29 +104,65 @@ namespace _2_21_Lab
 
         }
 
-        public static void CheckChoice(char[] displayWord, String word, ref int missed,
-                                       ref String guessed, char pickedLetter)
+        public static void CheckChoice(char[] displayWord, string word, ref int missed, 
+            ref string guessed, char pickedLetter)
         {
-            /*Update Check choice.  It should check to see if the letter picked is in the 
-             * word.  If it is, it should updated the guessed array (remember to handle 
-             * the situation where it is the first letter picked) and clear the 
-             * console.  If it is not, it should tell the user the letter was not 
-             * found, to press a key to continue.  Update the guessed letters array 
-             * and clear the console. 
-             */
+            Boolean badGuess = true;
+            for(int i = 0; i < word.Length; i++)
+            {
+                if(word[i] == pickedLetter)
+                {
+                    displayWord[i] = pickedLetter;
+                    badGuess = false;
+                }
+            }
 
+            if(badGuess)
+            {
+                Console.WriteLine("Letter not found... press a key to continue.");
+                Console.Clear();
+                missed++;
+                if(guessed == "No Letters Guessed Yet")
+                {
+                    guessed = "" + pickedLetter;
+                }
+                else
+                {
+                    Console.Clear();
+                    guessed += pickedLetter;
+                }
+            }
+            else
+            {
+                if(guessed == "No Letters Guessed Yet")
+                {
+                    guessed = "" + pickedLetter;
+                }
+                else
+                {
+                    Console.Clear();
+                    guessed += pickedLetter;
+                }
+            }
         }
 
         public static Boolean KeepGoing(char[] displayWord, int missed)
         {
-            /*Update to return true if they have missed less than 7 guesses 
-             * AND there are still underscores left meaning they have not 
-             * fully guessed the word
-             */
-
+            if(missed == 7)
+            {
+                return false;
+            }
+            for(int i = 0; i < displayWord.Length; i++)
+            {
+                 if(displayWord[i] == '_')
+                 {
+                    return true;
+                 }
+            }
+            return false;
         }
 
-        public static void ShowBoard(char[] displayWord, int missed, String guessed)
+        public static void ShowBoard(char[] displayWord, int missed, string guessed)
         {
             Console.WriteLine("Word to guess: ");
             for (int i = 0; i < displayWord.Length; i++)
@@ -128,16 +177,36 @@ namespace _2_21_Lab
 
         }
 
-        public static char[] SetDisplayWord(String word)
+        public static char[] SetDisplayWord(string word)
         {
-            /*SetDisplayWord to return a character array of 
-             * underscores and spaces to match the word returned in step 3
-             */
+            char[] displayWord = new char[word.Length];
+            for(int i = 0; i < word.Length; i++)
+            {
+                if (word[i] == ' ')
+                {
+                    displayWord[i] = ' ';
+                }
+                else
+                {
+                    displayWord[i] = '_';
+                }
+                
+            }
+            return displayWord;
         }
-        public static String GetRandomWord()
+        public static string GetRandomWord()
         {
-            /* Return a random word to be used in the game
-             */
+            string[] wordList =
+            { 
+                "RAMMER JAMMER", 
+                "BIG AL", 
+                "TOUCHDOWN ALABAMA", 
+                "WORK HARD PLAY HARD", 
+                "SECOND AND TWENTY SIX"
+            };
+
+            Random randomGenerator = new Random();
+            return wordList[randomGenerator.Next(0, 4)];
         }
         public static void ScoreBoard(int gamesWon, int gamesLost)
         {
